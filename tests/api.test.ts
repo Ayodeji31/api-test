@@ -1,8 +1,11 @@
 import { test, expect, request } from '@playwright/test';
+import config from "../utils/config"
 
-const URL = `https://api.thecatapi.com/v1/votes`
+const URL = config.baseURL;
 
 test.describe('Users API', () => {
+  let voteId: number;
+
     test("Perform a GET request to /votes.", async({request}) => {
        const response = await request.fetch(`${URL}`, {
             method: 'get',
@@ -13,7 +16,6 @@ test.describe('Users API', () => {
           expect(response.ok()).toBeTruthy();
           expect(response.status()).toBe(200);
           const votes = await response.json();
-          console.log(votes);
           expect(votes.length).toBeGreaterThan(0); 
     })
 
@@ -35,7 +37,6 @@ test.describe('Users API', () => {
 
      test("Perform a Post request to /votes id", async({request}) => {
         const response = await request.post(`${URL}`, {
-          //   method: 'post',
              headers: {
                  'x-api-key': 'DEMO-API-KEY'
              },
@@ -48,7 +49,23 @@ test.describe('Users API', () => {
            expect(response.ok()).toBeTruthy();
            expect(response.status()).toBe(201);
            const vote = await response.json();
+           console.log(vote);
            expect(vote).toHaveProperty('message',"SUCCESS");
+           voteId = vote.id;
+           expect(voteId).toBeDefined();
+           console.log(voteId);
      })
+
+     test("Perform a GET new request to /votes.", async({request}) => {
+      const response = await request.fetch(`${URL}/${voteId}`, {
+           method: 'get',
+           headers: {
+               'x-api-key': 'DEMO-API-KEY'
+           }
+         });
+         expect(response.ok()).toBeTruthy();
+         expect(response.status()).toBe(200);
+         const votes = await response.json();
+         expect(votes).toHaveProperty('id', voteId);})
 
 })
