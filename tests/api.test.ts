@@ -66,6 +66,31 @@ test.describe('Users API', () => {
          expect(response.ok()).toBeTruthy();
          expect(response.status()).toBe(200);
          const votes = await response.json();
-         expect(votes).toHaveProperty('id', voteId);})
+         expect(votes).toHaveProperty('id', voteId);
+       })
+
+       test("Perform a DELETE of new request on votes.", async({request}) => {
+        const response = await request.delete(`${URL}/${voteId}`, {
+             headers: {
+                 'x-api-key': 'DEMO-API-KEY'
+             }
+           });
+           expect(response.ok()).toBeTruthy();
+           expect(response.status()).toBe(200);
+           const votes = await response.json();
+           expect(votes).toHaveProperty('message',"SUCCESS");
+       })
+
+       test("Perform a GET on a deleted request vote.", async({request}) => {
+        const response = await request.fetch(`${URL}/1284468`, {
+             method: 'get',
+             headers: {
+                 'x-api-key': 'DEMO-API-KEY'
+             }
+           });
+            expect(response.ok()).toBeFalsy();
+            expect(response.status()).toBe(404);
+  
+         }) 
 
 })
